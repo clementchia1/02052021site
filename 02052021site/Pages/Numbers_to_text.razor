@@ -1,0 +1,64 @@
+﻿@page "/Numbers_to_text"
+
+<h1>Numbers to text</h1>
+
+<p>Please input number <input @bind="input_number" placeholder="2345" /> @number_notice</p>
+<p>Result: @result</p>
+
+<button class="btn btn-primary" @onclick="transform">Click me</button>
+
+@code {
+    private long input_number = 0;
+    private static string result = "";
+    string number_notice = "";
+
+    static long[] number_array = new long[] { 1, 2, 3, 4, 5, 6, 7, 8, 9,
+        10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 30, 40, 50,
+        60, 70, 80, 90, 100, 1000, 1000000, 1000000000, 1000000000000};
+    static string[] text_array = new string[] {"one", "two", "three",
+        "four", "five", "six", "seven", "eight", "nine", "ten",
+        "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen",
+        "seventeen","eighteen","nineteen","twenty","thirty", "fourty", "fifty",
+        "sixty", "seventy", "eighty", "nighty", "hundard", "thousand","million", "billion","trillion"};
+
+    void transform()
+    {
+        result = "";
+        to_text(input_number);
+
+    }
+
+    static void to_text(long input_number)
+    {
+        for (int i = text_array.Length - 1; input_number > 0; i--)//loop through the input_array from large to small
+        {
+
+            while (number_array[i] <= input_number)//looping
+            {
+                if (input_number >= 100)
+                {
+                    int j = 0;
+                    for (; input_number >= number_array[i]; j++) // counting the prefix("three" thousand)
+                    {
+                        input_number -= number_array[i];
+                    }
+
+                    if (j > 20)     //have to translate prefix (23->"twenty three" thousand)
+                    {
+                        to_text(j);
+                    }
+                    else            //no need to tranlate, directly get from array ("three" thousand)
+                    {
+                        result += text_array[j - 1] + " ";
+                    }
+                }
+                else
+                {
+                    input_number -= number_array[i];
+                }
+
+                result += text_array[i] + " ";//adding the postfix (three "thousand")
+            }
+        }
+    }
+}

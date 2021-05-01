@@ -1,0 +1,106 @@
+﻿@page "/Fuel_calculate"
+
+<h1>Numbers to text</h1>
+
+<p>Start KM: <input @bind="init_KM" placeholder="10" />KM @init_KM_notice</p>
+<p>End KM: <input @bind="end_KM" placeholder="215" />KM @end_KM_notice</p>
+<p>Traveled KM: <input @bind="travel_km" placeholder="optional" /> </p>
+<p>Fuel used: <input @bind="used_fuel" placeholder="10" />L @used_fuel_notice</p>
+<p>Fuel economy:	@fuel_econ_100km/100KM or @fuel_econ_L KM/L</p>
+<p>Fuel price: <input @bind="fuel_price" placeholder="optional" />c/L @fuel_price_notice</p>
+<p>Fuel cost: $@fuel_cost c/KM</p>
+
+<button class="btn btn-primary" @onclick="calculate">Click me</button>
+
+@code {
+    private string init_KM;
+    private string end_KM;
+    private int travel_km;
+    private string init_KM_notice;
+    private string end_KM_notice;
+    private string used_fuel_notice;
+    private string fuel_price_notice;
+    private string fuel_price;
+    private string used_fuel;
+    private double fuel_econ_100km;
+    private double fuel_econ_L;
+    private double fuel_cost;
+
+    void calculate()
+    {
+        init_KM_notice = "";
+        end_KM_notice = "";
+        used_fuel_notice = "";
+        fuel_price_notice="";
+        try
+        {
+            Convert.ToInt32(init_KM);
+        }
+        catch (FormatException)
+        {
+            init_KM_notice = init_KM + " is Bad format";
+        }
+        catch (OverflowException)
+        {
+            init_KM_notice = init_KM + " is Overflow";
+        }
+
+
+        try
+        {
+            Convert.ToInt32(end_KM);
+        }
+        catch (FormatException)
+        {
+            end_KM_notice = end_KM + " is Bad format";
+        }
+        catch (OverflowException)
+        {
+            end_KM_notice = end_KM + " is Overflow";
+        }
+
+        if (init_KM_notice == "" && end_KM_notice == "")
+        {
+            travel_km = Convert.ToInt32(end_KM) - Convert.ToInt32(init_KM);
+        }
+
+        try
+        {
+            Convert.ToInt32(used_fuel);
+        }
+        catch (FormatException)
+        {
+            used_fuel_notice = used_fuel + " is Bad format";
+        }
+        catch (OverflowException)
+        {
+            used_fuel_notice = used_fuel + " is Overflow";
+        }
+
+        if (used_fuel != "" && used_fuel_notice == "")
+        {
+            fuel_econ_100km = (float)Convert.ToInt32(used_fuel) / travel_km * 100;
+            fuel_econ_100km = Math.Round(fuel_econ_100km, 1);
+            fuel_econ_L = travel_km / Convert.ToInt32(used_fuel);
+            fuel_econ_L = Math.Round(fuel_econ_L, 1);
+        }
+
+        try
+        {
+            Convert.ToInt32(fuel_price);
+        }
+        catch (FormatException)
+        {
+            fuel_price_notice = fuel_price + " is Bad format";
+        }
+        catch (OverflowException)
+        {
+            fuel_price_notice = fuel_price + " is Overflow";
+        }
+        if (fuel_price != "" && fuel_price_notice == "")//$/KM
+        {
+            fuel_cost = (float)Convert.ToInt32(fuel_price) / fuel_econ_100km;
+            fuel_cost = Math.Round(fuel_cost, 1);
+        }
+    }
+}
